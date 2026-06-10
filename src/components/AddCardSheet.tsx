@@ -63,6 +63,7 @@ export default function AddCardSheet({ visible, onClose, onAdd, onPaste }: Props
   const [emoji, setEmoji] = useState('📍');
   const [name, setName] = useState('');
   const [date, setDate] = useState('');
+  const [lastUsedDate, setLastUsedDate] = useState('');
   const [address, setAddress] = useState('');
   const [time, setTime] = useState('');
   const [link, setLink] = useState('');
@@ -93,9 +94,9 @@ export default function AddCardSheet({ visible, onClose, onAdd, onPaste }: Props
     return cells;
   }, [calendarMonth]);
 
-  const reset = () => {
+  const reset = (nextDate = lastUsedDate) => {
     setCalendarVisible(false);
-    setEmoji('📍'); setName(''); setDate(''); setAddress(''); setTime(''); setLink(''); setNotes(''); setPasteText('');
+    setEmoji('📍'); setName(''); setDate(nextDate); setAddress(''); setTime(''); setLink(''); setNotes(''); setPasteText('');
   };
 
   const openCalendar = () => {
@@ -117,16 +118,18 @@ export default function AddCardSheet({ visible, onClose, onAdd, onPaste }: Props
   const handleAdd = () => {
     if (!name.trim()) { Alert.alert('Name required', 'Please enter a place name.'); return; }
     if (!date.trim()) { Alert.alert('Date required', 'Please enter the event day (e.g. 2026-06-14).'); return; }
+    const selectedDate = date.trim();
     onAdd({
       emoji,
       name: name.trim(),
-      date: date.trim(),
+      date: selectedDate,
       address: address.trim(),
       time: time.trim(),
       link: link.trim(),
       notes: notes.trim(),
     });
-    reset();
+    setLastUsedDate(selectedDate);
+    reset(selectedDate);
     onClose();
   };
 
