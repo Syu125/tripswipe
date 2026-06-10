@@ -125,6 +125,13 @@ export default function SwipeCard({ card, onDone, onSkip, isTop, stackIndex }: P
         <Text style={styles.emoji}>{card.emoji}</Text>
         <Text style={[styles.name, { color: colors.text }]}>{card.name}</Text>
 
+        {!!card.date && (
+          <View style={styles.row}>
+            <Text style={styles.rowIcon}>📅</Text>
+            <Text style={[styles.rowText, { color: colors.textSecondary }]}>{card.date}</Text>
+          </View>
+        )}
+
         {!!card.time && (
           <View style={styles.row}>
             <Text style={[styles.rowIcon]}>🕐</Text>

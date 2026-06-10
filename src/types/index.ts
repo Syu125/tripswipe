@@ -2,6 +2,7 @@ export interface TripCard {
   id: string;
   emoji: string;
   name: string;
+  date: string;
   address: string;
   time: string;
   link: string;

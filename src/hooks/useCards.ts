@@ -3,6 +3,44 @@ import uuid from 'react-native-uuid';
 import { Trip, TripCard } from '../types';
 import * as storage from '../store/storage';
 
+function getSortValue(card: TripCard): number {
+  const dateText = card.date?.trim();
+  if (!dateText) return Number.MAX_SAFE_INTEGER;
+
+  const baseDate = new Date(`${dateText}T00:00:00`);
+  if (Number.isNaN(baseDate.getTime())) return Number.MAX_SAFE_INTEGER;
+
+  const timeText = card.time?.trim();
+  if (!timeText) return baseDate.getTime();
+
+  const parsed = timeText.match(/^(\d{1,2})(?::(\d{2}))?\s*(AM|PM)?$/i);
+  if (!parsed) return baseDate.getTime();
+
+  let hour = Number(parsed[1]);
+  const minute = Number(parsed[2] ?? '0');
+  const ampm = parsed[3]?.toUpperCase();
+
+  if (ampm === 'PM' && hour < 12) hour += 12;
+  if (ampm === 'AM' && hour === 12) hour = 0;
+  if (hour > 23 || minute > 59) return baseDate.getTime();
+
+  const withTime = new Date(baseDate);
+  withTime.setHours(hour, minute, 0, 0);
+  return withTime.getTime();
+}
+
+function sortCardsBySchedule(cards: TripCard[]): TripCard[] {
+  return [...cards].sort((a, b) => getSortValue(a) - getSortValue(b));
+}
+
+function normalizeCard(card: TripCard): TripCard {
+  return {
+    ...card,
+    date: card.date ?? '',
+    notes: card.notes ?? '',
+  };
+}
+
 export function useTrips() {
   const [trips, setTrips] = useState<Trip[]>([]);
   const [loading, setLoading] = useState(true);
@@ -48,15 +86,15 @@ export function useTripCards(tripId: string) {
       storage.loadCards(tripId),
       storage.loadArchived(tripId),
     ]).then(([c, a]) => {
-      setCards(c);
-      setArchived(a);
+      setCards(sortCardsBySchedule(c.map(normalizeCard)));
+      setArchived(a.map(normalizeCard));
       setLoading(false);
     });
   }, [tripId]);
 
   const addCard = useCallback(async (card: Omit<TripCard, 'id' | 'tripId'>) => {
     const newCard: TripCard = { ...card, id: uuid.v4() as string, tripId };
-    const updated = [...cards, newCard];
+    const updated = sortCardsBySchedule([...cards, newCard]);
     setCards(updated);
     await storage.saveCards(tripId, updated);
   }, [cards, tripId]);
@@ -86,7 +124,7 @@ export function useTripCards(tripId: string) {
     const card = archived.find((c) => c.id === cardId);
     if (!card) return;
     const newArchived = archived.filter((c) => c.id !== cardId);
-    const newCards = [card, ...cards];
+    const newCards = sortCardsBySchedule([card, ...cards]);
     setCards(newCards);
     setArchived(newArchived);
     await storage.saveCards(tripId, newCards);
@@ -109,13 +147,14 @@ export function useTripCards(tripId: string) {
         tripId,
         emoji: EMOJIS[Math.floor(Math.random() * EMOJIS.length)],
         name: parts[0] || line,
+        date: parts[1] || '',
         address: '',
-        time: parts[1] || '',
-        link: parts[2] || '',
-        notes: parts.slice(3).join(', '),
+        time: parts[2] || '',
+        link: parts[3] || '',
+        notes: parts.slice(4).join(', '),
       };
     });
-    const updated = [...cards, ...newCards];
+    const updated = sortCardsBySchedule([...cards, ...newCards]);
     setCards(updated);
     await storage.saveCards(tripId, updated);
   }, [cards, tripId]);

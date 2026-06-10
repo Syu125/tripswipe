@@ -31,6 +31,7 @@ export default function AddCardSheet({ visible, onClose, onAdd, onPaste }: Props
   const [mode, setMode] = useState<Mode>('manual');
   const [emoji, setEmoji] = useState('📍');
   const [name, setName] = useState('');
+  const [date, setDate] = useState('');
   const [address, setAddress] = useState('');
   const [time, setTime] = useState('');
   const [link, setLink] = useState('');
@@ -38,14 +39,16 @@ export default function AddCardSheet({ visible, onClose, onAdd, onPaste }: Props
   const [pasteText, setPasteText] = useState('');
 
   const reset = () => {
-    setEmoji('📍'); setName(''); setAddress(''); setTime(''); setLink(''); setNotes(''); setPasteText('');
+    setEmoji('📍'); setName(''); setDate(''); setAddress(''); setTime(''); setLink(''); setNotes(''); setPasteText('');
   };
 
   const handleAdd = () => {
     if (!name.trim()) { Alert.alert('Name required', 'Please enter a place name.'); return; }
+    if (!date.trim()) { Alert.alert('Date required', 'Please enter the event day (e.g. 2026-06-14).'); return; }
     onAdd({
       emoji,
       name: name.trim(),
+      date: date.trim(),
       address: address.trim(),
       time: time.trim(),
       link: link.trim(),
@@ -121,6 +124,15 @@ export default function AddCardSheet({ visible, onClose, onAdd, onPaste }: Props
                   onChangeText={setName}
                 />
 
+                <Text style={[s.label, { color: colors.textSecondary }]}>Date *</Text>
+                <TextInput
+                  style={[s.input, { borderColor: colors.border, color: colors.text, backgroundColor: colors.bgSecondary }]}
+                  placeholder="e.g. 2026-06-14"
+                  placeholderTextColor={colors.textTertiary}
+                  value={date}
+                  onChangeText={setDate}
+                />
+
                 <Text style={[s.label, { color: colors.textSecondary }]}>Address</Text>
                 <TextInput
                   style={[s.input, { borderColor: colors.border, color: colors.text, backgroundColor: colors.bgSecondary }]}
@@ -169,12 +181,12 @@ export default function AddCardSheet({ visible, onClose, onAdd, onPaste }: Props
               <>
                 <Text style={[s.label, { color: colors.textSecondary }]}>One stop per line</Text>
                 <Text style={[s.hint, { color: colors.textTertiary }]}>
-                  Format: Place, Time, Google Maps Link, Notes{'\n'}
-                  e.g. Space Needle, 1:00 PM, https://maps.google.com/..., Sunset view first
+                  Format: Place, Date, Time, Google Maps Link, Notes{'\n'}
+                  e.g. Space Needle, 2026-06-14, 1:00 PM, https://maps.google.com/..., Sunset view first
                 </Text>
                 <TextInput
                   style={[s.textarea, { borderColor: colors.border, color: colors.text, backgroundColor: colors.bgSecondary }]}
-                  placeholder={'Pike Place Market, 10:00 AM, https://maps.google.com/..., Grab chowder\nSpace Needle, 1:00 PM, https://maps.google.com/..., Buy tickets early'}
+                  placeholder={'Pike Place Market, 2026-06-14, 10:00 AM, https://maps.google.com/..., Grab chowder\nSpace Needle, 2026-06-15, 1:00 PM, https://maps.google.com/..., Buy tickets early'}
                   placeholderTextColor={colors.textTertiary}
                   value={pasteText}
                   onChangeText={setPasteText}
