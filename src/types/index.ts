@@ -5,6 +5,7 @@ export interface TripCard {
   address: string;
   time: string;
   link: string;
+  notes: string;
   tripId: string;
 }
 

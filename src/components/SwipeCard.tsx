@@ -141,9 +141,16 @@ export default function SwipeCard({ card, onDone, onSkip, isTop, stackIndex }: P
 
         {!!card.link && (
           <TouchableOpacity style={styles.row} onPress={openLink} activeOpacity={0.7}>
-            <Text style={styles.rowIcon}>🔗</Text>
+            <Text style={styles.rowIcon}>🗺️</Text>
             <Text style={[styles.rowText, { color: colors.info }]}>{displayHost()}</Text>
           </TouchableOpacity>
+        )}
+
+        {!!card.notes && (
+          <View style={styles.row}>
+            <Text style={styles.rowIcon}>📝</Text>
+            <Text style={[styles.rowText, { color: colors.textSecondary }]}>{card.notes}</Text>
+          </View>
         )}
       </Animated.View>
     </GestureDetector>

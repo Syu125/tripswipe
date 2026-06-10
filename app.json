@@ -21,7 +21,8 @@
       "package": "com.yourname.tripswipe"
     },
     "plugins": [
-      "expo-router"
+      "expo-router",
+      "expo-asset"
     ],
     "scheme": "tripswipe"
   }

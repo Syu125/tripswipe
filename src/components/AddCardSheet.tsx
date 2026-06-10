@@ -34,15 +34,23 @@ export default function AddCardSheet({ visible, onClose, onAdd, onPaste }: Props
   const [address, setAddress] = useState('');
   const [time, setTime] = useState('');
   const [link, setLink] = useState('');
+  const [notes, setNotes] = useState('');
   const [pasteText, setPasteText] = useState('');
 
   const reset = () => {
-    setEmoji('📍'); setName(''); setAddress(''); setTime(''); setLink(''); setPasteText('');
+    setEmoji('📍'); setName(''); setAddress(''); setTime(''); setLink(''); setNotes(''); setPasteText('');
   };
 
   const handleAdd = () => {
     if (!name.trim()) { Alert.alert('Name required', 'Please enter a place name.'); return; }
-    onAdd({ emoji, name: name.trim(), address: address.trim(), time: time.trim(), link: link.trim() });
+    onAdd({
+      emoji,
+      name: name.trim(),
+      address: address.trim(),
+      time: time.trim(),
+      link: link.trim(),
+      notes: notes.trim(),
+    });
     reset();
     onClose();
   };
@@ -131,15 +139,26 @@ export default function AddCardSheet({ visible, onClose, onAdd, onPaste }: Props
                   onChangeText={setTime}
                 />
 
-                <Text style={[s.label, { color: colors.textSecondary }]}>Website or booking link</Text>
+                <Text style={[s.label, { color: colors.textSecondary }]}>Google Maps link</Text>
                 <TextInput
                   style={[s.input, { borderColor: colors.border, color: colors.text, backgroundColor: colors.bgSecondary }]}
-                  placeholder="https://..."
+                  placeholder="https://maps.google.com/..."
                   placeholderTextColor={colors.textTertiary}
                   value={link}
                   onChangeText={setLink}
                   autoCapitalize="none"
                   keyboardType="url"
+                />
+
+                <Text style={[s.label, { color: colors.textSecondary }]}>Details / notes</Text>
+                <TextInput
+                  style={[s.textarea, { borderColor: colors.border, color: colors.text, backgroundColor: colors.bgSecondary }]}
+                  placeholder="Anything helpful: reservation info, budget, must-try items..."
+                  placeholderTextColor={colors.textTertiary}
+                  value={notes}
+                  onChangeText={setNotes}
+                  multiline
+                  textAlignVertical="top"
                 />
 
                 <TouchableOpacity style={[s.submitBtn, { borderColor: colors.borderStrong }]} onPress={handleAdd}>
@@ -150,12 +169,12 @@ export default function AddCardSheet({ visible, onClose, onAdd, onPaste }: Props
               <>
                 <Text style={[s.label, { color: colors.textSecondary }]}>One stop per line</Text>
                 <Text style={[s.hint, { color: colors.textTertiary }]}>
-                  Format: Name, Address, Time, Link{'\n'}
-                  e.g. Space Needle, 400 Broad St, 1:00 PM, spaceneedle.com
+                  Format: Place, Time, Google Maps Link, Notes{'\n'}
+                  e.g. Space Needle, 1:00 PM, https://maps.google.com/..., Sunset view first
                 </Text>
                 <TextInput
                   style={[s.textarea, { borderColor: colors.border, color: colors.text, backgroundColor: colors.bgSecondary }]}
-                  placeholder={'Pike Place Market, 85 Pike St, 10:00 AM\nSpace Needle, 400 Broad St, 1:00 PM\nCapitol Hill coffee, Broadway Ave, 3:30 PM'}
+                  placeholder={'Pike Place Market, 10:00 AM, https://maps.google.com/..., Grab chowder\nSpace Needle, 1:00 PM, https://maps.google.com/..., Buy tickets early'}
                   placeholderTextColor={colors.textTertiary}
                   value={pasteText}
                   onChangeText={setPasteText}

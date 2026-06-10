@@ -109,9 +109,10 @@ export function useTripCards(tripId: string) {
         tripId,
         emoji: EMOJIS[Math.floor(Math.random() * EMOJIS.length)],
         name: parts[0] || line,
-        address: parts[1] || '',
-        time: parts[2] || '',
-        link: parts[3] || '',
+        address: '',
+        time: parts[1] || '',
+        link: parts[2] || '',
+        notes: parts.slice(3).join(', '),
       };
     });
     const updated = [...cards, ...newCards];
